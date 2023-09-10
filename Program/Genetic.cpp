@@ -17,7 +17,8 @@ void Genetic::run()
 		// crossoverOX(offspring, population.getBinaryTournament(),population.getBinaryTournament());
 		// crossoverCX(offspring, population.getBinaryTournament(),population.getBinaryTournament());
 		// crossoverPMX(offspring, population.getBinaryTournament(), population.getBinaryTournament());
-		crossoverER(offspring, population.getBinaryTournament(), population.getBinaryTournament());
+		// crossoverER(offspring, population.getBinaryTournament(), population.getBinaryTournament());
+		crossoverHX(offspring, population.getBinaryTournament(), population.getBinaryTournament());
 
 		/* LOCAL SEARCH */
 		localSearch.run(offspring, params.penaltyCapacity, params.penaltyDuration);
@@ -301,10 +302,17 @@ void Genetic::crossoverER(Individual & result, const Individual & parent1, const
 }
 
 void Genetic::crossoverHX(Individual & result, const Individual & parent1, const Individual & parent2)
-{
-	// use dist_mtx in Params to get the distance between two nodes
-	// dist_mtx[i][j] is the distance between node i and node j
-	
+{	
+	// Picking a random starting point exclude the depot
+	std::uniform_int_distribution<> distr(1, params.nbClients);
+	int start = distr(params.ran);
+	int j =  start;
+
+	// Check which node with j has the shorter distance edge
+	// Add this node to the result, mark it as visited
+	// If not available, check the distance with other not visited nodes and add the node with the shortest distance
+	// Repeat until all nodes are visited
+
 }
 
 int Genetic::findElementInParent2(int start, int end, int index, std::vector<int>& subvectorP2, const Individual & parent1, const Individual & parent2, Individual & result)
