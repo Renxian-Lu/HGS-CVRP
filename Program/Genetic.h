@@ -51,6 +51,8 @@ public:
 	void crossoverPMX(Individual & result, const Individual & parent1, const Individual & parent2);
 	// Edge Recombination Crossover
 	void crossoverER(Individual & result, const Individual & parent1, const Individual & parent2);
+	// Heuristic Crossover
+	void crossoverHX(Individual & result, const Individual & parent1, const Individual & parent2);
 	// Find a mapping element in the parent2 for PMX
 	int findElementInParent2(int start, int end, int index, std::vector<int>& subvectorP2, const Individual & parent1, const Individual & parent2, Individual & result);
 

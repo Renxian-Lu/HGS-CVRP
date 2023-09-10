@@ -300,6 +300,13 @@ void Genetic::crossoverER(Individual & result, const Individual & parent1, const
 	split.generalSplit(result, parent1.eval.nbRoutes);
 }
 
+void Genetic::crossoverHX(Individual & result, const Individual & parent1, const Individual & parent2)
+{
+	// use dist_mtx in Params to get the distance between two nodes
+	// dist_mtx[i][j] is the distance between node i and node j
+	
+}
+
 int Genetic::findElementInParent2(int start, int end, int index, std::vector<int>& subvectorP2, const Individual & parent1, const Individual & parent2, Individual & result)
 {
 	int elementP1 = parent1.chromT[index % params.nbClients];
