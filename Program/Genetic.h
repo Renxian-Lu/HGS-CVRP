@@ -26,6 +26,13 @@ SOFTWARE.*/
 #include "Population.h"
 #include "Individual.h"
 
+struct DoubleIndexValuePair {
+    int index1;
+    int value1;
+    int index2;
+    int value2;
+};
+
 class Genetic
 {
 public:
@@ -38,12 +45,23 @@ public:
 
 	// OX Crossover
 	void crossoverOX(Individual & result, const Individual & parent1, const Individual & parent2);
+	// CX Crossover
+	void crossoverCX(Individual & result, const Individual & parent1, const Individual & parent2);
+	// PMX Crossover
+	void crossoverPMX(Individual & result, const Individual & parent1, const Individual & parent2);
+	// Edge Recombination Crossover
+	void crossoverER(Individual & result, const Individual & parent1, const Individual & parent2);
+	// Find a mapping element in the parent2 for PMX
+	int findElementInParent2(int start, int end, int index, std::vector<int>& subvectorP2, const Individual & parent1, const Individual & parent2, Individual & result);
 
-    // Running the genetic algorithm until maxIterNonProd consecutive iterations or a time limit
+	// Running the genetic algorithm until maxIterNonProd consecutive iterations or a time limit
     void run() ;
 
 	// Constructor
 	Genetic(Params & params);
+
+private:
+    std::mt19937 randomEngine{std::random_device{}()};
 };
 
 #endif
