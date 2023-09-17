@@ -310,79 +310,63 @@ void Genetic::crossoverHX(Individual & result, const Individual & parent1, const
 	std::uniform_int_distribution<> distr(1, params.nbClients);
 	int start = distr(params.ran);
 	int j = start;
-	int i = 1;
 	result.chromT[0] = j;
 	freqClient[j] = true;
 
-	// for (int i = 1; i < params.nbClients; i++)
+	int i = 1;
 	do
 	{
-		// Get the index of j in parent1 and parent2
+		// Get the position of j in parent1 and parent2
 		int indexP1 = std::distance(parent1.chromT.begin(), std::find(parent1.chromT.begin(), parent1.chromT.end(), j));
 		int indexP2 = std::distance(parent2.chromT.begin(), std::find(parent2.chromT.begin(), parent2.chromT.end(), j));
 
+		// Get the successor of j in parent1 and parent2
 		int successorP1 = (indexP1 == params.nbClients - 1) ? parent1.chromT[0] : parent1.chromT[indexP1+1];
 		int successorP2 = (indexP2 == params.nbClients - 1) ? parent2.chromT[0] : parent2.chromT[indexP2+1];
 
-		// check if successorP1 and successorP2 are true in the freqClient
+		// Check if successorP1 and successorP2 are true in the freqClient
 		bool isP1 = freqClient[successorP1];
 		bool isP2 = freqClient[successorP2];
 
-		// If both are false, then choose the one with the shorter distance edge
+		// If both are available, then choose the one with the shorter distance edge
 		if (!isP1 && !isP2)
 		{
-			// std::cout << "----- If 1: " << std::endl;
 			double distanceP1 = params.timeCost[j][successorP1];
 			double distanceP2 = params.timeCost[j][successorP2];
 			if (distanceP1 < distanceP2)
 			{
-				// std::cout << "----- If 1.1: " << std::endl;
 				result.chromT[i] = successorP1;
 				freqClient[successorP1] = true;
 				j = successorP1;
 			} else {
-				// std::cout << "----- If 1.2: " << std::endl;
 				result.chromT[i] = successorP2;
 				freqClient[successorP2] = true;
 				j = successorP2;
 			}
 		} else if (!isP1) {
-			// std::cout << "----- If 2: " << std::endl;
 			result.chromT[i] = successorP1;
 			freqClient[successorP1] = true;
 			j = successorP1;
 		} else if (!isP2) {
-			// std::cout << "----- If 3: " << std::endl;
 			result.chromT[i] = successorP2;
 			freqClient[successorP2] = true;
 			j = successorP2;
 		} else {
-			// If both are false, then choose the one with the shorter distance edge
-			// std::cout << "----- index j: " << j << std::endl;
+			// If no available nodes from node j, then choose the other nodes with the shortest distance edge
 			double minDistance = std::numeric_limits<double>::max();
 			int minIndex = 0;
 			for (int k = 1; k < params.nbClients+1; k++)
 			{
-				// std::cout << "----- distance: " << minDistance << std::endl;
-				// std::cout << "----- j: " << j << "-----k: " << k << std::endl;
-				
 				if (params.timeCost[j][k] < minDistance && !freqClient[k] && k != j)
 				{
 					minDistance = params.timeCost[j][k];
 					minIndex = k;
-					// std::cout << "----- index k: " << k << std::endl;
 				}
 			}
-			// std::cout << "----- index i: " << i << std::endl;
 			result.chromT[i] = minIndex;
 			freqClient[minIndex] = true;
 			j = minIndex;
 		}
-		// for (const int& element : result.chromT) {
-		// 	std::cout << element << " ";
-		// }
-		// 	std::cout << std::endl;
-		// 	std::cout << "End inedx i: " << i << std::endl;
 		i++;
 	} while (i < params.nbClients);
 
