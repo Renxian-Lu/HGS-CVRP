@@ -14,11 +14,24 @@ void Genetic::run()
 	for (nbIter = 0 ; nbIterNonProd <= params.ap.nbIter && (params.ap.timeLimit == 0 || (double)(clock()-params.startTime)/(double)CLOCKS_PER_SEC < params.ap.timeLimit) ; nbIter++)
 	{	
 		/* SELECTION AND CROSSOVER */
-		// crossoverOX(offspring, population.getBinaryTournament(),population.getBinaryTournament());
+		if(params.ap.useCrossover == 1)
+			crossoverOX(offspring, population.getBinaryTournament(),population.getBinaryTournament());
+		else if (params.ap.useCrossover == 2)
+			crossoverCX(offspring, population.getBinaryTournament(),population.getBinaryTournament());
+		else if (params.ap.useCrossover == 3)
+			crossoverPMX(offspring, population.getBinaryTournament(), population.getBinaryTournament());
+		else if (params.ap.useCrossover == 4)
+			crossoverER(offspring, population.getBinaryTournament(), population.getBinaryTournament());
+		else if (params.ap.useCrossover == 5)
+			crossoverHX(offspring, population.getBinaryTournament(), population.getBinaryTournament());
+		else
+			// TO-DO : Add adaptive crossover
+			// ...
+			crossoverOX(offspring, population.getBinaryTournament(),population.getBinaryTournament());
 		// crossoverCX(offspring, population.getBinaryTournament(),population.getBinaryTournament());
 		// crossoverPMX(offspring, population.getBinaryTournament(), population.getBinaryTournament());
 		// crossoverER(offspring, population.getBinaryTournament(), population.getBinaryTournament());
-		crossoverHX(offspring, population.getBinaryTournament(), population.getBinaryTournament());
+		// crossoverHX(offspring, population.getBinaryTournament(), population.getBinaryTournament());
 
 		/* LOCAL SEARCH */
 		localSearch.run(offspring, params.penaltyCapacity, params.penaltyDuration);
@@ -137,7 +150,6 @@ void Genetic::crossoverCX(Individual & result, const Individual & parent1, const
 
 void Genetic::crossoverPMX(Individual & result, const Individual & parent1, const Individual & parent2) 
 {
-
 	// Frequency table to track the customers which have been already inserted
 	std::vector <bool> freqClient = std::vector <bool> (params.nbClients + 1, false);
 
@@ -280,12 +292,12 @@ void Genetic::crossoverER(Individual & result, const Individual & parent1, const
 		if (nextNodes.empty()) 
 		{
 			std::vector<int> unvisitedNodesVec(unvisitedNodes.begin(), unvisitedNodes.end());
-			std::shuffle(unvisitedNodesVec.begin(), unvisitedNodesVec.end(), randomEngine);
+			std::shuffle(unvisitedNodesVec.begin(), unvisitedNodesVec.end(), params.ran);
 			currentNode = unvisitedNodesVec.front();
 			unvisitedNodes.erase(currentNode);
 		} else {
 			// Choose a random node from the list of nodes with fewest neighbors
-			std::shuffle(nextNodes.begin(), nextNodes.end(), randomEngine);
+			std::shuffle(nextNodes.begin(), nextNodes.end(), params.ran);
 			currentNode = nextNodes.front();
 			unvisitedNodes.erase(currentNode);
 		}
@@ -316,11 +328,11 @@ void Genetic::crossoverHX(Individual & result, const Individual & parent1, const
 	int i = 1;
 	do
 	{
-		// Get the position of j in parent1 and parent2
+		// Get the position of node j in parent1 and parent2
 		int indexP1 = std::distance(parent1.chromT.begin(), std::find(parent1.chromT.begin(), parent1.chromT.end(), j));
 		int indexP2 = std::distance(parent2.chromT.begin(), std::find(parent2.chromT.begin(), parent2.chromT.end(), j));
 
-		// Get the successor of j in parent1 and parent2
+		// Get the successor of node j in parent1 and parent2
 		int successorP1 = (indexP1 == params.nbClients - 1) ? parent1.chromT[0] : parent1.chromT[indexP1+1];
 		int successorP2 = (indexP2 == params.nbClients - 1) ? parent2.chromT[0] : parent2.chromT[indexP2+1];
 

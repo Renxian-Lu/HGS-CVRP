@@ -85,6 +85,11 @@ public:
 					ap.penaltyIncrease = atof(argv[i+1]);
 				else if (std::string(argv[i]) == "-penaltyDecrease")
 					ap.penaltyDecrease = atof(argv[i+1]);
+				else if (std::string(argv[i]) == "-useCrossover")
+				{
+					ap.useCrossover = atoi(argv[i+1]);
+					std::cout << "----- CROSSOVER: " << ap.useCrossover << std::endl;
+				}
 				else
 				{
 					std::cout << "----- ARGUMENT NOT RECOGNIZED: " << std::string(argv[i]) << std::endl;

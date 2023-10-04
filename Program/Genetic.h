@@ -42,10 +42,6 @@ public:
 	LocalSearch localSearch;		// Local Search structure
 	Population population;			// Population (public for now to give access to the solutions, but should be be improved later on)
 	Individual offspring;			// First individual to be used as input for the crossover
-	struct Edge {
-		int to;
-		double distance;
-	};
 
 	// OX Crossover
 	void crossoverOX(Individual & result, const Individual & parent1, const Individual & parent2);
