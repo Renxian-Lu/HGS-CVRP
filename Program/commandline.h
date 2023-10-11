@@ -88,7 +88,7 @@ public:
 				else if (std::string(argv[i]) == "-useCrossover")
 				{
 					ap.useCrossover = atoi(argv[i+1]);
-					std::cout << "----- CROSSOVER: " << ap.useCrossover << std::endl;
+					// std::cout << "----- CROSSOVER: " << ap.useCrossover << std::endl;
 				}
 				else
 				{

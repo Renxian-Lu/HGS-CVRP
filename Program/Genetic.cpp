@@ -2,6 +2,8 @@
 #include <unordered_map>
 #include<algorithm>
 #include <unordered_set>
+#include <cstdlib>  // For rand() and srand()
+#include <ctime>    // For time()
 
 void Genetic::run()
 {	
@@ -24,10 +26,24 @@ void Genetic::run()
 			crossoverER(offspring, population.getBinaryTournament(), population.getBinaryTournament());
 		else if (params.ap.useCrossover == 5)
 			crossoverHX(offspring, population.getBinaryTournament(), population.getBinaryTournament());
-		else
-			// TO-DO : Add adaptive crossover
-			// ...
+		else if (params.ap.useCrossover == 6) 
+		{
+			// Choose one of the crossover randomly OX or PMX and each crossover has 50% chance
+			// Seed the random number generator with the current iteration
+    		srand(nbIter);
+			// Generate a random number between 0 and 1 (50% chance)
+    		int randomChoice = rand() % 2;
+
+			if (randomChoice == 0) 
+			{
+				crossoverOX(offspring, population.getBinaryTournament(),population.getBinaryTournament()); // 50% chance: Perform OX
+			} else {
+				crossoverPMX(offspring, population.getBinaryTournament(), population.getBinaryTournament()); // 50% chance: Perform PMX
+			}
+		} else {
 			crossoverOX(offspring, population.getBinaryTournament(),population.getBinaryTournament());
+		}
+
 		// crossoverCX(offspring, population.getBinaryTournament(),population.getBinaryTournament());
 		// crossoverPMX(offspring, population.getBinaryTournament(), population.getBinaryTournament());
 		// crossoverER(offspring, population.getBinaryTournament(), population.getBinaryTournament());
@@ -62,6 +78,9 @@ void Genetic::run()
 
 void Genetic::crossoverOX(Individual & result, const Individual & parent1, const Individual & parent2)
 {
+
+	// std::cout << "----- OX is used" << std::endl;
+
 	// Frequency table to track the customers which have been already inserted
 	std::vector <bool> freqClient = std::vector <bool> (params.nbClients + 1, false);
 
@@ -150,6 +169,9 @@ void Genetic::crossoverCX(Individual & result, const Individual & parent1, const
 
 void Genetic::crossoverPMX(Individual & result, const Individual & parent1, const Individual & parent2) 
 {
+
+	// std::cout << "----- PMX is used" << std::endl;
+
 	// Frequency table to track the customers which have been already inserted
 	std::vector <bool> freqClient = std::vector <bool> (params.nbClients + 1, false);
 
