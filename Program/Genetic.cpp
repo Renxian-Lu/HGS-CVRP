@@ -3,7 +3,7 @@
 #include<algorithm>
 #include <unordered_set>
 #include <cstdlib>  // For rand() and srand()
-#include <ctime>    // For time()
+#include <random>
 
 void Genetic::run()
 {	
@@ -40,14 +40,91 @@ void Genetic::run()
 			} else {
 				crossoverPMX(offspring, population.getBinaryTournament(), population.getBinaryTournament()); // 50% chance: Perform PMX
 			}
-		} else {
+		} 
+		else if (params.ap.useCrossover == 7)
+		{
+			// Seed the random number generator with the current time
+			std::mt19937 rng(nbIter);
+
+			// Create a uniform distribution to choose between the methods
+    		std::uniform_int_distribution<int> dist(0, 2);  // 0, 1, or 2 for the three methods
+
+			// Generate a random number to choose the method
+    		int selectedMethod = dist(rng);
+
+			// Choose the method based on the random number
+			switch (selectedMethod) {
+				case 0:
+					crossoverOX(offspring, population.getBinaryTournament(), population.getBinaryTournament());
+					break;
+				case 1:
+					crossoverPMX(offspring, population.getBinaryTournament(), population.getBinaryTournament());
+					break;
+				case 2:
+					crossoverCX(offspring, population.getBinaryTournament(), population.getBinaryTournament());
+					break;
+			}
+		}
+		else if (params.ap.useCrossover == 8)
+		{
+			// Seed the random number generator with the current time
+			std::mt19937 rng(nbIter);
+
+			// Create a uniform distribution to choose between the methods
+    		std::uniform_int_distribution<int> dist(0, 3);  // 0, 1, 2 or 3 for the three methods
+
+			// Generate a random number to choose the method
+    		int selectedMethod = dist(rng);
+
+			// Choose the method based on the random number
+			switch (selectedMethod) {
+				case 0:
+					crossoverOX(offspring, population.getBinaryTournament(), population.getBinaryTournament());
+					break;
+				case 1:
+					crossoverPMX(offspring, population.getBinaryTournament(), population.getBinaryTournament());
+					break;
+				case 2:
+					crossoverCX(offspring, population.getBinaryTournament(), population.getBinaryTournament());
+					break;
+				case 3:
+					crossoverHX(offspring, population.getBinaryTournament(), population.getBinaryTournament());
+					break;
+			}
+		}
+		else if (params.ap.useCrossover == 9)
+		{
+			// Seed the random number generator with the current time
+			std::mt19937 rng(nbIter);
+
+			// Create a uniform distribution to choose between the methods
+    		std::uniform_int_distribution<int> dist(0, 4);  // 0, 1, 2, 3 or 4 for the three methods
+
+			// Generate a random number to choose the method
+    		int selectedMethod = dist(rng);
+
+			// Choose the method based on the random number
+			switch (selectedMethod) {
+				case 0:
+					crossoverOX(offspring, population.getBinaryTournament(), population.getBinaryTournament());
+					break;
+				case 1:
+					crossoverPMX(offspring, population.getBinaryTournament(), population.getBinaryTournament());
+					break;
+				case 2:
+					crossoverCX(offspring, population.getBinaryTournament(), population.getBinaryTournament());
+					break;
+				case 3:
+					crossoverER(offspring, population.getBinaryTournament(), population.getBinaryTournament());
+					break;
+				case 4:
+					crossoverHX(offspring, population.getBinaryTournament(), population.getBinaryTournament());
+					break;
+			}
+		}
+		else {
 			crossoverOX(offspring, population.getBinaryTournament(),population.getBinaryTournament());
 		}
-
-		// crossoverCX(offspring, population.getBinaryTournament(),population.getBinaryTournament());
-		// crossoverPMX(offspring, population.getBinaryTournament(), population.getBinaryTournament());
-		// crossoverER(offspring, population.getBinaryTournament(), population.getBinaryTournament());
-		// crossoverHX(offspring, population.getBinaryTournament(), population.getBinaryTournament());
 
 		/* LOCAL SEARCH */
 		localSearch.run(offspring, params.penaltyCapacity, params.penaltyDuration);
@@ -169,9 +246,6 @@ void Genetic::crossoverCX(Individual & result, const Individual & parent1, const
 
 void Genetic::crossoverPMX(Individual & result, const Individual & parent1, const Individual & parent2) 
 {
-
-	// std::cout << "----- PMX is used" << std::endl;
-
 	// Frequency table to track the customers which have been already inserted
 	std::vector <bool> freqClient = std::vector <bool> (params.nbClients + 1, false);
 
