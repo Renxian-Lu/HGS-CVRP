@@ -42,6 +42,9 @@ public:
 	LocalSearch localSearch;		// Local Search structure
 	Population population;			// Population (public for now to give access to the solutions, but should be be improved later on)
 	Individual offspring;			// First individual to be used as input for the crossover
+	typedef void (Genetic::*CrossoverFunction)(Individual&, const Individual&, const Individual&);
+	std::vector<double> crossoverProbabilities = {0.2, 0.2, 0.2, 0.2, 0.2}; // Probability of each crossover operator
+
 
 	// OX Crossover
 	void crossoverOX(Individual & result, const Individual & parent1, const Individual & parent2);
@@ -55,6 +58,8 @@ public:
 	void crossoverHX(Individual & result, const Individual & parent1, const Individual & parent2);
 	// Find a mapping element in the parent2 for PMX
 	int findElementInParent2(int start, int end, int index, std::vector<int>& subvectorP2, const Individual & parent1, const Individual & parent2, Individual & result);
+	void crossoverSelection(Individual & result, const Individual & parent1, const Individual & parent2);
+	int rwsSelection(Individual & result, const Individual & parent1, const Individual & parent2, int nbIter);
 
 	// Running the genetic algorithm until maxIterNonProd consecutive iterations or a time limit
     void run() ;
@@ -64,6 +69,8 @@ public:
 
 private:
     std::mt19937 randomEngine{std::random_device{}()};
+	std::vector<CrossoverFunction> crossoverFunctions;
+	int k = 0;
 };
 
 #endif

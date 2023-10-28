@@ -13,6 +13,7 @@ void Genetic::run()
 	int nbIter;
 	int nbIterNonProd = 1;
 	if (params.verbose) std::cout << "----- STARTING GENETIC ALGORITHM" << std::endl;
+
 	for (nbIter = 0 ; nbIterNonProd <= params.ap.nbIter && (params.ap.timeLimit == 0 || (double)(clock()-params.startTime)/(double)CLOCKS_PER_SEC < params.ap.timeLimit) ; nbIter++)
 	{	
 		/* SELECTION AND CROSSOVER */
@@ -122,6 +123,12 @@ void Genetic::run()
 					break;
 			}
 		}
+		else if (params.ap.useCrossover == 10) 
+		{	
+			// std::cout << "----- k:" << k << std::endl;
+			( this->*crossoverFunctions[0] )(offspring, population.getBinaryTournament(), population.getBinaryTournament());
+			// crossoverSelection(offspring, population.getBinaryTournament(),population.getBinaryTournament());	
+		} 
 		else {
 			crossoverOX(offspring, population.getBinaryTournament(),population.getBinaryTournament());
 		}
@@ -155,7 +162,6 @@ void Genetic::run()
 
 void Genetic::crossoverOX(Individual & result, const Individual & parent1, const Individual & parent2)
 {
-
 	// std::cout << "----- OX is used" << std::endl;
 
 	// Frequency table to track the customers which have been already inserted
@@ -501,10 +507,50 @@ int Genetic::findElementInParent2(int start, int end, int index, std::vector<int
 	}
 }
 
+// Todo: Implement the crossover selection
+void Genetic::crossoverSelection(Individual & result, const Individual & parent1, const Individual & parent2)
+{
+
+}
+
+// Todo: roulette wheel selection
+int Genetic::rwsSelection(Individual & result, const Individual & parent1, const Individual & parent2, int nbIter)
+{
+	int crossoverMethodIndex = 0;
+	// Seed the random number generator with the current time
+	std::mt19937 rng(nbIter);
+	// Create a uniform real distribution in the range [0, 1]
+    std::uniform_real_distribution<double> dist(0.0, 1.0);
+    double r = dist(rng);
+	// Calculate the cumulative probability
+  	double cumulativeProb = 0;
+
+	// Find the operator whose probability interval contains r
+	for (const double& probability : crossoverProbabilities) {
+		cumulativeProb += probability;
+		if (cumulativeProb >= r) {
+			// Get the index of the crossover method
+			crossoverMethodIndex = std::distance(crossoverProbabilities.begin(), std::find(crossoverProbabilities.begin(), crossoverProbabilities.end(), probability));
+			return crossoverMethodIndex;
+		}
+	}
+	return crossoverProbabilities.back(); // Return the last crossover method if no one is found (this should not happen if probabilities are normalized)
+}
+
 Genetic::Genetic(Params & params) : 
 	params(params), 
 	split(params),
 	localSearch(params),
 	population(params,this->split,this->localSearch),
-	offspring(params){}
+	offspring(params){
+		// Initialize the crossover functions vector with your crossover methods
+    crossoverFunctions = 
+	{
+        &Genetic::crossoverOX,
+        &Genetic::crossoverCX,
+        &Genetic::crossoverPMX,
+        &Genetic::crossoverER,
+        &Genetic::crossoverHX
+    };
+	}
 
