@@ -132,7 +132,6 @@ void Genetic::run()
 		}
 		else if (params.ap.useCrossover == 10) 
 		{
-			
 			// Increment the iteration counter
     		iterationCounter++;
 
@@ -180,14 +179,14 @@ void Genetic::run()
 		if (nbIter % params.ap.nbIterPenaltyManagement == 0) population.managePenalties();
 		if (nbIter % params.ap.nbIterTraces == 0) population.printState(nbIter, nbIterNonProd);
 
-		/* ADAPTATION OF THE REWARD AND PENALTY PARAMETERS */
-		if(nbIter > 1)
-			creditAssignment(lastPenalizedCost, crossoverMethodIndex);
-		
-		lastPenalizedCost = offspring.eval.penalizedCost;
-		// if(params.ap.useCrossover == 10)
-		// {
-		// }
+		if(params.ap.useCrossover == 10)
+		{
+			/* ADAPTATION OF THE REWARD AND PENALTY PARAMETERS */
+			if(nbIter > 1)
+				creditAssignment(lastPenalizedCost, crossoverMethodIndex);
+			
+			lastPenalizedCost = offspring.eval.penalizedCost;
+		}
 
 		/* FOR TESTS INVOLVING SUCCESSIVE RUNS UNTIL A TIME LIMIT: WE RESET THE ALGORITHM/POPULATION EACH TIME maxIterNonProd IS ATTAINED*/
 		if (params.ap.timeLimit != 0 && nbIterNonProd == params.ap.nbIter)
@@ -551,10 +550,10 @@ void Genetic::creditAssignment(double lastPenalizedCost, int crossoverMethodInde
 {
 	if(offspring.eval.penalizedCost <= lastPenalizedCost)
 	{
-		// reward the crossover method
+		// Reward the crossover method
 		nReward[crossoverMethodIndex] += 1;
 	} else {
-		// penalty the crossover method
+		// Penalty the crossover method
 		nPenalty[crossoverMethodIndex] += 1;
 	}
 }

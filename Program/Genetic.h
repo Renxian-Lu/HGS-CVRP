@@ -42,7 +42,8 @@ public:
 	LocalSearch localSearch;		// Local Search structure
 	Population population;			// Population (public for now to give access to the solutions, but should be be improved later on)
 	Individual offspring;			// First individual to be used as input for the crossover
-	// Individual lastOffspring;  // Variable to store the last offspring
+
+	// Variables for updateOSP
 	std::vector<int> S1 = {0, 0, 0, 0, 0};
 	std::vector<int> S2 = {0, 0, 0, 0, 0};
 	std::vector<double> S3 = {0, 0, 0, 0, 0};
@@ -57,7 +58,7 @@ public:
 	std::vector<int> nPenalty = {0, 0, 0, 0, 0};
 	int LP = 5; // Number of repeated generations for OSP
 
-	// make a matrix with 5 columns, each column represents a crossover operator and 5 rows, each row represents a nReward
+	// Make a matrix of rewards and penalties for each operator and each LP
 	std::vector<std::vector<int>> rewardMatrix = {nReward, nReward, nReward, nReward, nReward};
 	std::vector<std::vector<int>> penaltyMatrix = {nPenalty, nPenalty, nPenalty, nPenalty, nPenalty};
 
