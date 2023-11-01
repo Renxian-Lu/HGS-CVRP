@@ -42,9 +42,24 @@ public:
 	LocalSearch localSearch;		// Local Search structure
 	Population population;			// Population (public for now to give access to the solutions, but should be be improved later on)
 	Individual offspring;			// First individual to be used as input for the crossover
-	typedef void (Genetic::*CrossoverFunction)(Individual&, const Individual&, const Individual&);
-	std::vector<double> crossoverProbabilities = {0.2, 0.2, 0.2, 0.2, 0.2}; // Probability of each crossover operator
+	// Individual lastOffspring;  // Variable to store the last offspring
+	std::vector<int> S1 = {0, 0, 0, 0, 0};
+	std::vector<int> S2 = {0, 0, 0, 0, 0};
+	std::vector<double> S3 = {0, 0, 0, 0, 0};
+	std::vector<double> S4 = {0, 0, 0, 0, 0};
 
+
+	typedef void (Genetic::*CrossoverFunction)(Individual&, const Individual&, const Individual&);
+	// Probability of each crossover operator
+	std::vector<double> crossoverProbabilities = {0.2, 0.2, 0.2, 0.2, 0.2}; 
+	// Initialize the rewards and penalties for each operator
+	std::vector<int> nReward = {0, 0, 0, 0, 0};
+	std::vector<int> nPenalty = {0, 0, 0, 0, 0};
+	int LP = 5; // Number of repeated generations for OSP
+
+	// make a matrix with 5 columns, each column represents a crossover operator and 5 rows, each row represents a nReward
+	std::vector<std::vector<int>> rewardMatrix = {nReward, nReward, nReward, nReward, nReward};
+	std::vector<std::vector<int>> penaltyMatrix = {nPenalty, nPenalty, nPenalty, nPenalty, nPenalty};
 
 	// OX Crossover
 	void crossoverOX(Individual & result, const Individual & parent1, const Individual & parent2);
@@ -56,10 +71,12 @@ public:
 	void crossoverER(Individual & result, const Individual & parent1, const Individual & parent2);
 	// Heuristic Crossover
 	void crossoverHX(Individual & result, const Individual & parent1, const Individual & parent2);
+
 	// Find a mapping element in the parent2 for PMX
 	int findElementInParent2(int start, int end, int index, std::vector<int>& subvectorP2, const Individual & parent1, const Individual & parent2, Individual & result);
-	void crossoverSelection(Individual & result, const Individual & parent1, const Individual & parent2);
-	int rwsSelection(Individual & result, const Individual & parent1, const Individual & parent2, int nbIter);
+	int rwsSelection(int nbIter);
+	void creditAssignment(double lastPenalizedCost, int crossoverIndex);
+	void updateOSP(std::vector<int>& S1, std::vector<int>& S2, std::vector<double>& S3, std::vector<double>& S4);
 
 	// Running the genetic algorithm until maxIterNonProd consecutive iterations or a time limit
     void run() ;
