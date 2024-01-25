@@ -43,22 +43,26 @@ public:
 	Population population;			// Population (public for now to give access to the solutions, but should be be improved later on)
 	Individual offspring;			// First individual to be used as input for the crossover
 
+	// Added by Renxian Lu
 	// Variables for updateOSP
 	std::vector<int> S1 = {0, 0, 0, 0, 0};
 	std::vector<int> S2 = {0, 0, 0, 0, 0};
 	std::vector<double> S3 = {0, 0, 0, 0, 0};
 	std::vector<double> S4 = {0, 0, 0, 0, 0};
-
+	// End of addition
 
 	typedef void (Genetic::*CrossoverFunction)(Individual&, const Individual&, const Individual&);
+	
+	// Added by Renxian Lu
 	// Probability of each crossover operator
 	std::vector<double> crossoverProbabilities = {0.2, 0.2, 0.2, 0.2, 0.2}; 
-	// Initialize the rewards and penalties for each operator
+	// Initialize the rewards for each operator
 	std::vector<int> nReward = {0, 0, 0, 0, 0};
+	// Initialize the penalties for each operator
 	std::vector<int> nPenalty = {0, 0, 0, 0, 0};
 	int LP = 5; // Number of repeated generations for OSP
 
-	// Make a matrix of rewards and penalties for each operator and each LP
+	// Make a matrix of rewards and penalties for each LP
 	std::vector<std::vector<int>> rewardMatrix = {nReward, nReward, nReward, nReward, nReward};
 	std::vector<std::vector<int>> penaltyMatrix = {nPenalty, nPenalty, nPenalty, nPenalty, nPenalty};
 
@@ -78,6 +82,7 @@ public:
 	int rwsSelection(int nbIter);
 	void creditAssignment(double lastPenalizedCost, int crossoverIndex);
 	void updateOSP(std::vector<int>& S1, std::vector<int>& S2, std::vector<double>& S3, std::vector<double>& S4);
+	// End of addition
 
 	// Running the genetic algorithm until maxIterNonProd consecutive iterations or a time limit
     void run() ;
@@ -86,9 +91,11 @@ public:
 	Genetic(Params & params);
 
 private:
+	// Added by Renxian Lu
     std::mt19937 randomEngine{std::random_device{}()};
 	std::vector<CrossoverFunction> crossoverFunctions;
 	int k = 0;
+	// End of addition
 };
 
 #endif

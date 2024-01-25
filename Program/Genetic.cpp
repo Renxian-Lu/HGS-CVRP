@@ -5,12 +5,15 @@
 #include <cstdlib>  // For rand() and srand()
 #include <random>
 #include <numeric>
+#include <cmath>
+#include "commandline.h"
 
 void Genetic::run()
 {	
 	/* INITIAL POPULATION */
 	population.generatePopulation();
 
+	// Added by Renxian Lu
 	// parameters for AOS
 	int k = 0;
 	int iterationCounter = 0;
@@ -135,20 +138,56 @@ void Genetic::run()
 			// Increment the iteration counter
     		iterationCounter++;
 
-			if (iterationCounter != 50) 
+			if (iterationCounter != params.ap.iterationAOS) 
 			{
 				const Individual & parent1 = population.getBinaryTournament();
 				const Individual & parent2 = population.getBinaryTournament();
 
+				// // print out the crossoverProbabilities
+				// std::cout << "----- Crossover Probabilities: " << std::endl;
+				// for (int i = 0; i < crossoverProbabilities.size(); i++)
+				// {
+				// 	std::cout << crossoverProbabilities[i] << " ";
+				// }
+				// std::cout << std::endl;
+
 				// Select the crossover method based on roulette wheel selection
 				crossoverMethodIndex = rwsSelection(nbIter);
+
+				// Perform the crossover
 				( this->*crossoverFunctions[crossoverMethodIndex] )(offspring, parent1, parent2);
-
 			} else {
+				// Reset the iteration counter
+				iterationCounter = 0;
 
-				// Append nReward and nPenalty to k_th row of rewardMatrix and penaltyMatrix
+				// // print out k
+				// std::cout << "----- k: " << k << std::endl;
+
+				// // print out nReward
+				// std::cout << "----- nReward: " << std::endl;
+				// for (int i = 0; i < nReward.size(); i++)
+				// {
+				// 	std::cout << nReward[i] << " ";
+				// }
+				// std::cout << std::endl;
+				// // print out nPenalty
+				// std::cout << "----- nPenalty: " << std::endl;
+				// for (int i = 0; i < nPenalty.size(); i++)
+				// {
+				// 	std::cout << nPenalty[i] << " ";
+				// }
+				// std::cout << std::endl;
+
+				// Append nReward to k_th row of rewardMatrix
 				rewardMatrix[k] = nReward;
+				// Append nPenalty to k_th row of penaltyMatrix
 				penaltyMatrix[k] = nPenalty;
+
+				// Reset nRward
+				nReward = {0, 0, 0, 0, 0};
+				// Reset nPenalty
+				nPenalty = {0, 0, 0, 0, 0};
+
 				k += 1;
 
 				if(k == LP){
@@ -161,6 +200,7 @@ void Genetic::run()
 		else {
 			crossoverOX(offspring, population.getBinaryTournament(),population.getBinaryTournament());
 		}
+		//	End of addition
 
 		/* LOCAL SEARCH */
 		localSearch.run(offspring, params.penaltyCapacity, params.penaltyDuration);
@@ -179,14 +219,16 @@ void Genetic::run()
 		if (nbIter % params.ap.nbIterPenaltyManagement == 0) population.managePenalties();
 		if (nbIter % params.ap.nbIterTraces == 0) population.printState(nbIter, nbIterNonProd);
 
+		// Added by Renxian Lu
 		if(params.ap.useCrossover == 10)
 		{
 			/* ADAPTATION OF THE REWARD AND PENALTY PARAMETERS */
-			if(nbIter > 1)
+			if(nbIter > 1 && iterationCounter != params.ap.iterationAOS)
 				creditAssignment(lastPenalizedCost, crossoverMethodIndex);
 			
 			lastPenalizedCost = offspring.eval.penalizedCost;
 		}
+		// End of addition
 
 		/* FOR TESTS INVOLVING SUCCESSIVE RUNS UNTIL A TIME LIMIT: WE RESET THE ALGORITHM/POPULATION EACH TIME maxIterNonProd IS ATTAINED*/
 		if (params.ap.timeLimit != 0 && nbIterNonProd == params.ap.nbIter)
@@ -196,8 +238,48 @@ void Genetic::run()
 		}
 	}
 	if (params.verbose) std::cout << "----- GENETIC ALGORITHM FINISHED AFTER " << nbIter << " ITERATIONS. TIME SPENT: " << (double)(clock() - params.startTime) / (double)CLOCKS_PER_SEC << std::endl;
+
+	// Added by Renxian Lu
+	// Print out information in the terminal
+	if(params.ap.useCrossover == 10)
+	{
+		// Print out rewardMatrix
+		std::cout << "----- rewardMatrix: " << std::endl;
+		for (int i = 0; i < rewardMatrix.size(); i++)
+		{
+			for (int j = 0; j < rewardMatrix[i].size(); j++)
+			{
+				std::cout << rewardMatrix[i][j] << " ";
+			}
+			std::cout << std::endl;
+		}
+		std::cout << std::endl;
+
+		// Print out penaltyMatrix
+		std::cout << "----- penaltyMatrix: " << std::endl;
+		for (int i = 0; i < penaltyMatrix.size(); i++)
+		{
+			for (int j = 0; j < penaltyMatrix[i].size(); j++)
+			{
+				std::cout << penaltyMatrix[i][j] << " ";
+			}
+			std::cout << std::endl;
+		}
+		std::cout << std::endl;
+
+		// Print out the crossoverProbabilities
+		std::cout << "----- Crossover Probabilities: " << std::endl;
+		for (int i = 0; i < crossoverProbabilities.size(); i++)
+		{
+			std::cout << crossoverProbabilities[i] << " ";
+		}
+		std::cout << std::endl;
+	}
+	// End of addition
+
 }
 
+// Added by Renxian Lu
 void Genetic::crossoverOX(Individual & result, const Individual & parent1, const Individual & parent2)
 {
 	// std::cout << "----- OX is used" << std::endl;
@@ -253,6 +335,7 @@ void Genetic::crossoverCX(Individual & result, const Individual & parent1, const
 		HT1[parent2.chromT[j % params.nbClients]] = tempPair;
     }
 
+	// Create cycles
 	std::vector<std::vector<DoubleIndexValuePair>> Cycles;
 	for (int j = 0; j < params.nbClients; ++j) {
         if (!freqClient[j]) {
@@ -270,6 +353,7 @@ void Genetic::crossoverCX(Individual & result, const Individual & parent1, const
         }
     }
 
+	// Perform the crossover
 	int counter = 0;
     for (const auto &C : Cycles) {
         for (const auto &tempPair : C) {
@@ -586,25 +670,25 @@ int Genetic::rwsSelection(int nbIter)
 // Todo: update the operator selection probability (OSP)
 void Genetic::updateOSP(std::vector<int>& S1, std::vector<int>& S2, std::vector<double>& S3, std::vector<double>& S4)
 {
-	// Sum up the reward for each operator
-    for (int i = 0; i < rewardMatrix.size(); ++i) 
+	// Sum up the reward for each operator in all LP
+    for (int i = 0; i < crossoverFunctions.size(); ++i) 
 	{
-        // Sum up rewardMatrix[i][j], j is from 0 to 4
 		double sumReward = S1[i];
-		for (int j = 0; j < crossoverFunctions.size(); ++j)
+		// Sum up crossover i in all LP
+		for (int j = 0; j < rewardMatrix.size(); ++j)
 		{
-			sumReward += rewardMatrix[i][j];
+			sumReward += rewardMatrix[j][i];
 		}
 		S1[i] = sumReward;
     }
-	// Sum up the penalty for each operator
-	for (int i = 0; i < penaltyMatrix.size(); ++i) 
+	// Sum the penalty for each operator in all LP
+	for (int i = 0; i < crossoverFunctions.size(); ++i) 
 	{
-		// Sum up penaltyMatrix[i][j], j is from 0 to 4
+		// Sum up crossover i in all LP
 		double sumPenalty = S2[i];
-		for (int j = 0; j < crossoverFunctions.size(); ++j)
+		for (int j = 0; j < penaltyMatrix.size(); ++j)
 		{
-			sumPenalty += penaltyMatrix[i][j];
+			sumPenalty += penaltyMatrix[j][i];
 		}
 		S2[i] = sumPenalty;
 	}
@@ -620,29 +704,66 @@ void Genetic::updateOSP(std::vector<int>& S1, std::vector<int>& S2, std::vector<
 		}
 	}
 
+	// // print out S1
+	// std::cout << "----- S1: " << std::endl;
+	// for (int i = 0; i < S1.size(); i++)
+	// {
+	// 	std::cout << S1[i] << " ";
+	// }
+	// std::cout << std::endl;
+	// // print out S2
+	// std::cout << "----- S2: " << std::endl;
+	// for (int i = 0; i < S2.size(); i++)
+	// {
+	// 	std::cout << S2[i] << " ";
+	// }
+	// std::cout << std::endl;
+	// // print out S3
+	// std::cout << "----- S3: " << std::endl;
+	// for (int i = 0; i < S3.size(); i++)
+	// {
+	// 	std::cout << S3[i] << " ";
+	// }
+	// std::cout << std::endl;
+
 	// Calculate S4 for each operator
 	for (int i = 0; i < crossoverFunctions.size(); ++i) 
 	{
-		S4[i] = S1[i] / (S3[i] + S2[i]);
+		// S4[i] = S1[i] / (S3[i] + S2[i]);
+		// Option 1
+		// S4[i] = pow(S4[i], 2);
+		// Option 2
+		// S4[i] = exp(S1[i] / (S3[i] + S2[i]));
+		// Option 3
+		S4[i] = pow(S1[i],2) / (pow(S3[i],2) + pow(S2[i],2));
 	}
 
 	// Sum up the all elements in S4
 	double sumS4 = std::accumulate(S4.begin(), S4.end(), 0.0);
 
-	// Normalize the probability of each operator
+	// Normalize the probability of each operator and update the crossoverProbabilities
 	for (int i = 0; i < crossoverFunctions.size(); ++i) 
 	{
 		crossoverProbabilities[i] = S4[i] / sumS4;
+		crossoverProbabilities[i] = pow(crossoverProbabilities[i], 2);
+	}
+
+	// sum up the all elements in crossoverProbabilities
+	double sumCrossoverProbabilities = std::accumulate(crossoverProbabilities.begin(), crossoverProbabilities.end(), 0.0);
+
+	for (int i = 0; i < crossoverFunctions.size(); ++i)
+	{
+		crossoverProbabilities[i] = crossoverProbabilities[i] / sumCrossoverProbabilities;
 	}
 }
+// End of addition
 
-Genetic::Genetic(Params & params) : 
+Genetic::Genetic(Params & params): 
 	params(params), 
 	split(params),
 	localSearch(params),
 	population(params,this->split,this->localSearch),
 	offspring(params){
-	// Initialize the crossover functions vector with your crossover methods
     crossoverFunctions = 
 	{
         &Genetic::crossoverOX,

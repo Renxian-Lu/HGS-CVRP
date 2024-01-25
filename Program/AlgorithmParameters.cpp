@@ -26,8 +26,10 @@ struct AlgorithmParameters default_algorithm_parameters() {
 	ap.timeLimit = 0;
 	ap.useSwapStar = 1;
 
+	// Added by Renxian Lu
 	ap.useCrossover = 1;
-
+	ap.iterationAOS = 50;
+	// End of addition
 	return ap;
 }
 
@@ -49,5 +51,6 @@ void print_algorithm_parameters(const AlgorithmParameters & ap)
 	std::cout << "---- timeLimit               is set to " << ap.timeLimit << std::endl;
 	std::cout << "---- useSwapStar             is set to " << ap.useSwapStar << std::endl;
 	std::cout << "---- useCrossover            is set to " << ap.useCrossover << std::endl;
+	std::cout << "---- iterationAOS            is set to " << ap.iterationAOS << std::endl;
 	std::cout << "==================================================" << std::endl;
 }

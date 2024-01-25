@@ -32,8 +32,16 @@ struct AlgorithmParameters {
 	   3: Partially Mapped Crossover (PMX)
 	   4: Edge Recombination Crossover (ERX)
 	   5: Heuristic Crossover (HX)
+	   6: OX and PMX (each with same probability)
+	   7: OX, PMX and CX (each with same probability)
+	   8: OX, PMX, CX and HX (each with same probability)
+	   9: All crossover operators (each with same probability)
+	   10: AOS (Adaptive Operator Selection)
+	   else: OX
 	*/
 	int useCrossover;
+	int iterationAOS;       // Number of iterations (only for AOS)
+	// End of addition
 };
 
 #ifdef __cplusplus
