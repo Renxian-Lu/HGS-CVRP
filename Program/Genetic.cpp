@@ -143,14 +143,6 @@ void Genetic::run()
 				const Individual & parent1 = population.getBinaryTournament();
 				const Individual & parent2 = population.getBinaryTournament();
 
-				// // print out the crossoverProbabilities
-				// std::cout << "----- Crossover Probabilities: " << std::endl;
-				// for (int i = 0; i < crossoverProbabilities.size(); i++)
-				// {
-				// 	std::cout << crossoverProbabilities[i] << " ";
-				// }
-				// std::cout << std::endl;
-
 				// Select the crossover method based on roulette wheel selection
 				crossoverMethodIndex = rwsSelection(nbIter);
 
@@ -159,24 +151,6 @@ void Genetic::run()
 			} else {
 				// Reset the iteration counter
 				iterationCounter = 0;
-
-				// // print out k
-				// std::cout << "----- k: " << k << std::endl;
-
-				// // print out nReward
-				// std::cout << "----- nReward: " << std::endl;
-				// for (int i = 0; i < nReward.size(); i++)
-				// {
-				// 	std::cout << nReward[i] << " ";
-				// }
-				// std::cout << std::endl;
-				// // print out nPenalty
-				// std::cout << "----- nPenalty: " << std::endl;
-				// for (int i = 0; i < nPenalty.size(); i++)
-				// {
-				// 	std::cout << nPenalty[i] << " ";
-				// }
-				// std::cout << std::endl;
 
 				// Append nReward to k_th row of rewardMatrix
 				rewardMatrix[k] = nReward;
@@ -703,28 +677,6 @@ void Genetic::updateOSP(std::vector<int>& S1, std::vector<int>& S2, std::vector<
 			S3[i] = S1[i];
 		}
 	}
-
-	// // print out S1
-	// std::cout << "----- S1: " << std::endl;
-	// for (int i = 0; i < S1.size(); i++)
-	// {
-	// 	std::cout << S1[i] << " ";
-	// }
-	// std::cout << std::endl;
-	// // print out S2
-	// std::cout << "----- S2: " << std::endl;
-	// for (int i = 0; i < S2.size(); i++)
-	// {
-	// 	std::cout << S2[i] << " ";
-	// }
-	// std::cout << std::endl;
-	// // print out S3
-	// std::cout << "----- S3: " << std::endl;
-	// for (int i = 0; i < S3.size(); i++)
-	// {
-	// 	std::cout << S3[i] << " ";
-	// }
-	// std::cout << std::endl;
 
 	// Calculate S4 for each operator
 	for (int i = 0; i < crossoverFunctions.size(); ++i) 
